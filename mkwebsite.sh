@@ -80,9 +80,13 @@ mkpage() {
 
 # Build website.
 build() {
+	: "${MODULES:="$(find "$SRC_DIR/../modules.d" -type f -printf ':%p' | cut -d ':' -f 2-)"}"
+
 	# Load built-ins modules.
+	test -z "$MODULES" && log_fatal "no modules to load: \$MODULES is empty"
+	log_debug "\$MODULES=$MODULES"
 	while read -r mod; do
-		log_debug "loading module $(realpath "$mod")"
+		log_debug "loading module $mod"
 		require "$mod"
 	done < <(tr ':' '\n' <<< "$MODULES")
 

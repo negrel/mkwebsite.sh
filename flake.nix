@@ -37,10 +37,20 @@
               name = "mkwebsite.sh";
               text = (builtins.readFile ./mkwebsite.sh);
             };
+            mod_css = pkgs.writeText "css" (builtins.readFile ./modules.d/css);
+            mod_template = pkgs.writeText "minify" (builtins.readFile ./modules.d/template);
+            mod_log = pkgs.writeText "minify" (builtins.readFile ./modules.d/log);
+            mod_minify = pkgs.writeText "minify" (builtins.readFile ./modules.d/minify);
           };
           devShells = {
             default = pkgs.mkShell {
-              buildInputs = with pkgs; [ shellcheck ] ++ mkwebsiteInputs;
+              buildInputs =
+                with pkgs;
+                [
+                  shellcheck
+                  minify
+                ]
+                ++ mkwebsiteInputs;
             };
           };
         }
