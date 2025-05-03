@@ -6,8 +6,11 @@ test -n "${DEBUG:-""}" && set -x
 
 eval "$(log4bash)"
 
+# Config vars.
 : "${SRC_DIR:="src"}"
 : "${OUT_DIR:="build"}"
+: "${HOST:="127.0.0.1"}"
+: "${PORT:=8080}"
 
 # Globals
 required_files=()
@@ -108,8 +111,8 @@ watch() {
 
 	lighttpd -D -f <(cat <<EOF
 server.document-root = "$(realpath "$OUT_DIR")"
-server.bind = "127.0.0.1"
-server.port = 8080
+server.bind = "$HOST"
+server.port = $PORT
 
 server.modules = (
   "mod_accesslog",
@@ -145,6 +148,13 @@ main() {
 	if [ "$#" = "0" ]; then
 		print_help
 		exit 1
+	fi
+
+	# Load config file.
+	if [ -f "mkwebsite.conf" ]; then
+		log_info "loading configuration file"
+		# shellcheck disable=SC1091
+		source "mkwebsite.conf"
 	fi
 
 	while [ "$#" -gt 0 ]; do
