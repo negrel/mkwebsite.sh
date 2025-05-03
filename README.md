@@ -1,43 +1,11 @@
-# `mkwebsite` - Static site generator in bash
-
-## Why ?
-
-- What was your motivation?
-- Why did you build this project?
-- What problem does it solve?
-- What did you learn?
-- What makes your project stand out?
-
-If your project has a lot of features, consider adding a "Features" section and listing them here.
-
-## Getting started
-
-### Configuration
-
-Here is a table of configuration options:
-
-|  Option name  | Default value |           Description            |
-| :-----------: | :-----------: | :------------------------------: |
-| `OPTION_NAME` |    `VALUE`    |       Option description.        |
-
-### Building the project
-
-```shell
-make build
-```
-
-### Running the tests
-
-```shell
-make tests
-```
+# `mkwebsite.sh` - Static site generator in bash
 
 ## Contributing
 
-If you want to contribute to `mkwebsite` to add a feature or improve the code contact
+If you want to contribute to `mkwebsite.sh` to add a feature or improve the code contact
 me at [alexandre@negrel.dev](mailto:alexandre@negrel.dev), open an
-[issue](https://github.com/negrel/mkwebsite/issues) or make a
-[pull request](https://github.com/negrel/mkwebsite/pulls).
+[issue](https://github.com/negrel/mkwebsite.sh/issues) or make a
+[pull request](https://github.com/negrel/mkwebsite.sh/pulls).
 
 ## :stars: Show your support
 
