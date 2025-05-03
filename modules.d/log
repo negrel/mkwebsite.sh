@@ -1,5 +1,7 @@
 post_clean_phase+=("log_build")
 
 log_build() {
-  log_info "$SRC > $DST"
+  if [ -e "$DST" ]; then
+    log_info "$SRC > $DST"
+  fi
 }
