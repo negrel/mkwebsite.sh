@@ -1,0 +1,15 @@
+setup_phase+=("js_detect")
+
+js_detect() {
+	if [ -f "$SRC" ] && [ "${SRC%.js}" != "$SRC" ]; then
+		log_debug "$SRC is a js file"
+		build_phase+=("js_build")
+	else
+		log_debug "$SRC is not a js page (no .js extension)"
+	fi
+}
+
+js_build() {
+	mkdir -p "$(dirname "$DST")"
+	cp "$SRC" "$DST"
+}
