@@ -1,0 +1,8 @@
+post_build_phase+=("minify_after_build")
+
+minify_after_build() {
+  if [ -f "$DST" ]; then
+    log_info "minifying $DST"
+    minify "$DST" | sponge "$DST" || true
+  fi
+}

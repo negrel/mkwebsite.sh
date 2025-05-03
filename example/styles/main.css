@@ -1,0 +1,24 @@
+:root {
+	--blue: 211.22 67.89% 57.25%;
+	--purple: 274.13 53.69% 60.2%;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--blue: 211.22 67.89% 57.25%;
+		--purple: 274.13 53.69% 60.2%;
+	}
+}
+
+.linear-gradient-blue-purple {
+	mask-image: linear-gradient(180deg, #fff 50%, hsla(0, 0%, 100%, 0));
+	-webkit-mask-image:
+		linear-gradient(180deg, #fff 50%, hsla(0, 0%, 100%, 0));
+
+	--gradient-from: hsl(var(--blue)/0.2);
+	--gradient-to: hsl(var(--purple)/0.2);
+	--gradient-stops: var(--gradient-from), var(--gradient-to);
+
+	background-image: linear-gradient(to right, var(--gradient-stops));
+	filter: saturate(2);
+}

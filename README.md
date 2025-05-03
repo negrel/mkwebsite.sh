@@ -1,7 +1,5 @@
 # `mkwebsite` - Static site generator in bash
 
-
-
 ## Why ?
 
 - What was your motivation?
