@@ -14,7 +14,7 @@
       flake-utils,
       log4bash,
       ...
-    }@inputs:
+    }:
     let
       outputsWithoutSystem = { };
       outputsWithSystem = flake-utils.lib.eachDefaultSystem (
@@ -23,17 +23,24 @@
           pkgs = import nixpkgs {
             inherit system;
           };
-          lib = pkgs.lib;
+          mkwebsiteInputs = with pkgs; [
+            coreutils
+            bash
+            lighttpd
+            log4bash.packages.${system}.default
+          ];
         in
         {
+          packages = {
+            default = pkgs.writeShellApplication {
+              runtimeInputs = mkwebsiteInputs;
+              name = "mkwebsite.sh";
+              text = (builtins.readFile ./mkwebsite.sh);
+            };
+          };
           devShells = {
             default = pkgs.mkShell {
-              buildInputs = with pkgs; [
-                minify
-                lighttpd
-                shellcheck
-                log4bash.packages.${system}.default
-              ];
+              buildInputs = with pkgs; [ shellcheck ] ++ mkwebsiteInputs;
             };
           };
         }

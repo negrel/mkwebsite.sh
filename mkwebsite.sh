@@ -4,8 +4,6 @@ set -euo pipefail
 shopt -s inherit_errexit
 test -n "${DEBUG:-""}" && set -x
 
-SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-
 eval "$(log4bash)"
 
 : "${SRC_DIR:="src"}"
@@ -81,15 +79,9 @@ mkpage() {
 build() {
 	# Load built-ins modules.
 	while read -r mod; do
-		log_debug "loading built-in module $(realpath "$mod")"
-		require "$mod"
-	done < <(find "$SCRIPT_DIR/modules.d" -type f)
-
-	# Load modules.
-	while read -r mod; do
 		log_debug "loading module $(realpath "$mod")"
 		require "$mod"
-	done < <(find "$SRC_DIR/../modules.d" -type f)
+	done < <(tr ':' '\n' <<< "$MODULES")
 
 	# Build output pages.
 	find "$SRC_DIR" -type f | while read -r file; do
