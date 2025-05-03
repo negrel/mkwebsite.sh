@@ -9,51 +9,39 @@ eval "$(log4bash)"
 # Config vars.
 : "${SRC_DIR:="src"}"
 : "${OUT_DIR:="build"}"
+: "${CACHE_DIR:="cache"}"
 : "${HOST:="127.0.0.1"}"
 : "${PORT:=8080}"
 
 # Globals
-required_files=()
 declare -a \
 	pre_setup_phase setup_phase post_setup_phase \
 	pre_build_phase build_phase post_build_phase \
 	pre_clean_phase clean_phase post_clean_phase
 
-# Source $1 if it hasn't been sourced already.
-require() {
-	local f
-	f="$(realpath "$1")"
-
-	for rf in "${required_files[@]}"; do
-		if [ "$rf" == "$f" ]; then
-			log_debug "file $f already sourced, skipping it"
-			return 0;
-		fi
-	done
-
-	log_debug "file $f never sourced, sourcing it"
-	# shellcheck disable=SC1090
-	source "$1"
-	required_files+=("$f")
-}
-
 # Execute provided phase hooks sequentially until one fails or sets
 # $PHASE_STOP to a non empty string.
 phase() {
-	local name="$1"
+	local old="${PHASE:-}"
+	export PHASE="$1"
 	shift
 
-	log_debug "phase $name ($#: $*)..."
+	log_debug "phase $PHASE ($#: $*)..."
 
 	while [ "$#" -gt 0 ] && [ -z "${PHASE_STOP:-}" ]; do
-		log_debug "$name: $1..."
+		log_debug "$PHASE: $1..."
 		"$1"
-		log_debug "$name: $1 done"
+		log_debug "$PHASE: $1 done"
 		shift
 	done
-	unset PHASE_STOP
+	log_debug "phase $PHASE done (stopped: ${PHASE_STOP:-false})"
 
-	log_debug "phase $name done"
+	unset PHASE_STOP
+	unset PHASE
+
+	if [ -n "$old" ]; then
+		export PHASE="$old"
+	fi
 }
 
 # Build a single page.
@@ -78,18 +66,20 @@ mkpage() {
 	)
 }
 
-# Build website.
-build() {
+load_modules() {
 	: "${MODULES:="$(find "$SRC_DIR/../modules.d" -type f -printf ':%p' | cut -d ':' -f 2-)"}"
 
-	# Load built-ins modules.
 	test -z "$MODULES" && log_fatal "no modules to load: \$MODULES is empty"
 	log_debug "\$MODULES=$MODULES"
 	while read -r mod; do
 		log_debug "loading module $mod"
-		require "$mod"
+		# shellcheck disable=SC1090
+		source "$mod"
 	done < <(tr ':' '\n' <<< "$MODULES")
 
+}
+
+build() {
 	# Build output pages.
 	find "$SRC_DIR" -type f | while read -r file; do
 		mkpage "$file" "$OUT_DIR/${file#"$SRC_DIR"/}"
@@ -111,6 +101,7 @@ print_help() {
 
 # Watch for changes under $SRC_DIR and rebuild on change.
 watch() {
+	load_modules
 	build
 
 	lighttpd -D -f <(cat <<EOF
@@ -170,6 +161,7 @@ main() {
 
 			build)
 				shift
+				load_modules
 				build "$@"
 				exit 0
 				;;

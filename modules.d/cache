@@ -1,0 +1,22 @@
+if [ -z "${NO_CACHE:-}" ]; then
+  setup_phase=("cache" "${setup_phase[@]}")
+  build_phase=("cache" "${build_phase[@]}")
+  clean_phase=("cache" "${clean_phase[@]}")
+
+  cache() {
+    test -d "$CACHE_DIR" || mkdir -p "$CACHE_DIR"
+    local h
+    h="$(set | sha256sum | cut -d ' ' -f 1)"
+    log_debug "$SRC > $DST hash: $h"
+    if [ -f "$CACHE_DIR/$h" ]; then
+      log_info "$SRC cached, skipping build"
+      export PHASE_STOP=true
+    else
+      if [ -n "${DEBUG:-}" ]; then
+        set
+      else
+        true
+      fi > "$CACHE_DIR/$h"
+    fi
+  }
+fi

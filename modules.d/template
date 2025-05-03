@@ -7,7 +7,8 @@ pre_setup_phase+=("template_detect")
 template_detect() {
 	if [ -f "$SRC" ] && [ "${SRC%.tpl}" != "$SRC" ]; then
 		log_debug "$SRC is a template page"
-		require "$SRC"
+		# shellcheck disable=SC1090
+		source "$SRC"
 		if [ "${ignore:-"false"}" != "false" ]; then
 			log_debug "ignoring $SRC template page"
 		else
@@ -24,7 +25,6 @@ template_build() {
 	DST="${DST%.tpl}"
 	(
 		exec > "$DST"
-		require "$SRC"
 		render "$@"
 	)
 }

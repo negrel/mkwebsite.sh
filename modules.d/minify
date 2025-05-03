@@ -1,6 +1,6 @@
 hash minify
 
-post_build_phase+=("minify_after_build")
+build_phase+=("minify_after_build")
 
 minify_after_build() {
   if [ -f "$DST" ]; then
