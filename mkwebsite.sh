@@ -50,6 +50,7 @@ mkpage() {
 	local src="$1"
 	local dst="$2"
 
+	# Execute phases in a subshell so pages are isolated.
 	(
 		export SRC="$src"
 		export DST="$dst"
@@ -67,6 +68,15 @@ mkpage() {
 	)
 }
 
+# Build all pages.
+build() {
+	# Build output pages.
+	find "$SRC_DIR" -type f | while read -r file; do
+		mkpage "$file" "$OUT_DIR/${file#"$SRC_DIR"/}"
+	done
+}
+
+# Load and sources modules.
 load_modules() {
 	: "${MODULES:="$(find "$SRC_DIR/../modules.d" -type f -printf ':%p' | cut -d ':' -f 2-)"}"
 
@@ -80,13 +90,7 @@ load_modules() {
 
 }
 
-build() {
-	# Build output pages.
-	find "$SRC_DIR" -type f | while read -r file; do
-		mkpage "$file" "$OUT_DIR/${file#"$SRC_DIR"/}"
-	done
-}
-
+# Print help menu.
 print_help() {
 	echo "mkwebsite.sh v0.1.0"
 	echo "Static site generator in bash"
@@ -102,9 +106,11 @@ print_help() {
 
 # Watch for changes under $SRC_DIR and rebuild on change.
 watch() {
+	# Initial build.
 	load_modules
 	build
 
+	# Start light http server in background.
 	lighttpd -D -f <(cat <<EOF
 server.document-root = "$(realpath "$OUT_DIR")"
 server.bind = "$HOST"
