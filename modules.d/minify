@@ -1,6 +1,8 @@
 hash minify
 
-build_phase+=("minify_after_build")
+if [ "$MKWEBSITE_ENV" = "production" ]; then
+  build_phase+=("minify_after_build")
+fi
 
 minify_after_build() {
   if [ -f "$DST" ]; then

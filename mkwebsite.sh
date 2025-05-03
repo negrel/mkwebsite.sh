@@ -14,6 +14,7 @@ eval "$(log4bash)"
 : "${PORT:=8080}"
 
 # Globals
+export MKWEBSITE_ENV="dev"
 declare -a \
 	pre_setup_phase setup_phase post_setup_phase \
 	pre_build_phase build_phase post_build_phase \
@@ -160,6 +161,7 @@ main() {
 				;;
 
 			build)
+				MKWEBSITE_ENV="production"
 				shift
 				load_modules
 				build "$@"
