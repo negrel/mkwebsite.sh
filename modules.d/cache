@@ -8,7 +8,16 @@ if [ -z "${NO_CACHE:-}" ]; then
 		local h
 		h="$(set | sha256sum | cut -d ' ' -f 1)"
 		log_debug "$SRC > $DST hash: $h"
-		if [ -f "$CACHE_DIR/$h" ]; then
+
+		local src_last_mod
+		src_last_mod="$(stat -c %Y "$SRC")"
+
+		local dst_last_mod="0"
+		if [ -e "$DST" ]; then
+			dst_last_mod="$(stat -c %Y "$DST")"
+		fi
+
+		if [ -f "$CACHE_DIR/$h" ] && [ "$src_last_mod" -le "$dst_last_mod" ]; then
 			log_info "$SRC cached, skipping build"
 			export PHASE_STOP=true
 		else
