@@ -1,12 +1,12 @@
 hash minify
 
 if [ "$MKWEBSITE_ENV" = "production" ]; then
-  build_phase+=("minify_after_build")
+	build_phase+=("minify_after_build")
 fi
 
 minify_after_build() {
-  if [ -f "$DST" ]; then
-    log_info "minifying $DST"
-    minify "$DST" | sponge "$DST" || true
-  fi
+	if [ -f "$DST" ]; then
+		log_info "minifying $DST"
+		minify "$DST" | sponge "$DST" || true
+	fi
 }
