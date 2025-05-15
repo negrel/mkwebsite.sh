@@ -1,25 +1,27 @@
-export ignore=true
+# This file contains the base layout used for page rendering.
 
 layout_base() {
 	cat <<EOF
+<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charSet="UTF-8" />
-		<title>$title</title>
+		<title>${title:=""}</title>
 		<meta name="generator" content="mkwebsite.sh" />
-		<meta name="description" content="$subtitle" />
+		<meta name="description" content="${subtitle:=""}" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="/styles/reset.css" />
 		<link rel="stylesheet" href="/styles/the_monospace_web.css" />
 		<link rel="stylesheet" href="/styles/main.css" />
+		<script src="/reload.js" defer></script>
 	</head>
-	<body class="debug">
+	<body class="$(test -n "${DEBUG:-}" && echo "debug")">
 		<div class="debug-grid"></div>
 		<header>
 			<table class="header">
 				<tr>
 					<td colspan="2" rowspan="2" class="width-auto">
-						<h1 class="title">$title</h1>
+						<h1 class="title">${title}</h1>
 						<span class="subtitle">$subtitle</span>
 					</td>
 					<th>Version</th>
