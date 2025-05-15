@@ -1,4 +1,4 @@
-if [ -z "${NO_CACHE:-}" ]; then
+if [ -z "${NO_CACHE:-}" ] && false; then
 	setup_phase=("cache" "${setup_phase[@]}")
 	build_phase=("cache" "${build_phase[@]}")
 	clean_phase=("cache" "${clean_phase[@]}")
