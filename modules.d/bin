@@ -1,0 +1,24 @@
+# This module enables generating page from executable file.
+
+pre_setup_phase+=("bin_detect")
+
+# Detect if file is an executable file.
+bin_detect() {
+	if [ -f "$SRC" ] && [ -x "$SRC" ]; then
+		log_debug "$SRC is an executable file"
+		build_phase+=("bin_build")
+	else
+		log_debug "$SRC is not an executable file"
+	fi
+}
+
+# Build template.
+bin_build() {
+	mkdir -p "$(dirname "$DST")"
+	DST="${DST%.md}"
+	(
+		exec > "$DST.html"
+		"$SRC"
+	)
+}
+
