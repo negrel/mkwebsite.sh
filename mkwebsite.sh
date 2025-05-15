@@ -4,6 +4,8 @@ set -euo pipefail
 shopt -s inherit_errexit
 test -n "${DEBUG:-""}" && set -x
 
+echo "${BASH_SOURCE[@]}"
+
 eval "$(log4bash)"
 
 # Config vars.
@@ -71,7 +73,7 @@ mkpage() {
 # Build all pages.
 build() {
 	# Build output pages.
-	find "$SRC_DIR" -type f | while read -r file; do
+	find -L "$SRC_DIR" -type f | while read -r file; do
 		mkpage "$file" "$OUT_DIR/${file#"$SRC_DIR"/}"
 	done
 }
@@ -145,11 +147,12 @@ setenv.set-environment = (
 EOF
 ) &
 
-cat <<EOF > "$OUT_DIR/reload.js"
+	cat <<EOF > "$OUT_DIR/reload.js"
 (() => {
   const socket = new WebSocket('/reload.sh');
   socket.addEventListener('error', console.error);
-  socket.addEventListener('close', () => {
+  socket.addEventListener('close', (ev) => {
+    console.log(ev)
     window.location.reload()
   });
 })();
@@ -193,8 +196,11 @@ cgi_reload_wss() {
 	echo "Connection: Upgrade"
 	echo "Sec-WebSocket-Accept: $key"
 	echo ""
+
 	# Sleep forever to keep socket open.
-	while true; do sleep 1; done
+	while true; do
+		read -r -t 1 _ || true
+	done
 }
 
 main() {
